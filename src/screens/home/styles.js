@@ -1,37 +1,45 @@
-const React = require("react-native");
-const { Dimensions, Platform } = React;
-const deviceHeight = Dimensions.get("window").height;
-
 export default {
-  imageContainer: {
+  container: {
     flex: 1,
-    width: null,
-    height: null
+    paddingTop: 0,
+    backgroundColor: 'rgb(230, 206, 144)',
   },
-  logoContainer: {
+
+  games: {
+    paddingLeft: 12,
+    paddingRight: 12,
+    paddingTop: 12,
+
+  },
+
+  imageBackground: {
     flex: 1,
-    marginTop: deviceHeight / 10,
+    height: '100%',
+    width: '100%',
   },
-  titulo: {
-    color: '#FFF',
-    textAlign: 'center',
-    fontSize: 50
+
+  headerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingRight: 24,
+    paddingLeft: 24,
+    paddingTop: 12,
+    paddingBottom: 12,
+    backgroundColor: '#00BCD4',
+    borderWidth: 2,
+    borderRadius: 8,
+    borderColor: '#ffffff',
+    margin: 8,
+    marginTop: 36,
   },
-  formContainer: {
-    flex: 1,
-    marginTop: -150
+
+  headerTitle: {
+    fontWeight: '300',
+    color: '#ffffff',
+
+    fontSize: 28,
+    fontWeight: '900',
+
   },
-  text: {
-    color: "#FFF",
-    bottom: 6,
-    marginTop: 5
-  },
-  color: {
-    color: '#FFF'
-  },
-  button: {
-    margin: 15,
-    marginTop: 50,
-    backgroundColor: '#EAB543'
-  }
 };

@@ -1,117 +1,108 @@
 import React, { Component } from "react";
-import { ImageBackground, View, StatusBar } from "react-native";
-import { Container, Button, Text, Form, Item, Input, Icon, Toast } from "native-base";
-import { AsyncStorage } from "@react-native-community/async-storage";
-
+import {
+  ImageBackground,
+  View,
+  FlatList
+} from "react-native";
+import {
+  Container,
+  Header,
+  Title,
+  Content,
+  Text,
+  Button,
+  Icon,
+  Left,
+  Right,
+  Body
+} from "native-base";
+import AsyncStorage from '@react-native-community/async-storage';
 import styles from "./styles";
 
-const launchscreenBg = require("../../../assets/bg.jpg");
+import QuestionListItem from '../questions/questionlistitem';
+import QuestionHelper from '../Services/questionhelper';
+
+import localQuestionList from '../../../assets/raw/gamelist.json';
 
 class Home extends Component {
 
+  static navigationOptions = {
+    header: null
+  }
+
   constructor(props) {
     super(props);
+
     this.state = {
-      desemail: '',
-      dessenha: ''
-    }
+      loading: false,
+      data: [],
+      page: 1,
+      seed: 1,
+      error: null,
+      refreshing: false,
+    };
   }
 
-  efetuaLogin() {
-
-    if (this.state.desemail == '') {
-      Toast.show({
-        text: 'Favor informe o E-mail!',
-        buttonText: 'Okay',
-        position: "bottom",
-        type: "warning"
-      })
-      return;
-    }
-
-    if (this.state.dessenha == '') {
-      Toast.show({
-        text: 'Favor informe a Senha!',
-        buttonText: 'Okay',
-        position: "bottom",
-        type: "warning"
-      })
-      return;
-    }
-
-    fetch('http://192.168.0.2:3000/login', {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        desemail: this.state.desemail,
-        dessenha: this.state.dessenha
-      }),
-    })
-      .then((response) => response.json())
-      .then((responseJson) => {
-        if (responseJson.success) {
-          setValue = async () => {
-            try {
-              await AsyncStorage.setItem('@token', responseJson.data.idpessoacode)
-              await AsyncStorage.setItem('@despessoa', responseJson.data.despessoa)
-              await AsyncStorage.setItem('@desemail', responseJson.data.desemail)
-            } catch (e) {
-              // save error
-            }
-          }
-          this.props.navigation.navigate('Simulados');
-        } else {
-          Toast.show({
-            text: responseJson.msg,
-            buttonText: 'Okay',
-            position: "bottom",
-            type: "danger"
-          })
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-
+  componentDidMount() {
+    this._makeLocalRequestForGameList();
   }
 
-  
+  _makeLocalRequestForGameList = () => {
+    this.setState({ loading: true });
+    this.setState({ error: null });
+    this.setState({ gameList: localQuestionList.games });
+    this.setState({ loading: false });
+  };
+
+  _keyExtractor = (item, index) => index;
+
+  _renderItem = ({ item }) => (
+    <QuestionListItem
+      game={item}
+      onPressItem={this._onPressItem}
+    />
+  );
+
+  _onPressItem = (game: Object) => {
+    //  Store the selected game
+    QuestionHelper.setActualGame(game);
+
+    this.props.navigation.navigate(
+      'QuestionScreen',
+      {
+        game: game
+      }
+    );
+
+  };
 
   render() {
     return (
-      <Container>
-        <StatusBar barStyle="light-content" />
-        <ImageBackground source={launchscreenBg} style={styles.imageContainer}>
-          <View style={styles.logoContainer}>
-            <Text style={styles.titulo}>Simul@ TI</Text>
+      <Container style={styles.container}>
+        <Header>
+          <Body>
+            <Title>Home</Title>
+          </Body>
+          <Right />
+        </Header>
+
+        <ImageBackground
+          style={styles.imageBackground}
+          source={require('../../../assets/images/bg.png')}
+          resizeMode="cover"
+        >
+          <View style={styles.headerContainer}>
+            <Text style={styles.headerTitle}>Themes</Text>
           </View>
-          <View style={styles.formContainer}>
-            <Form>
-              <Item >
-                <Icon style={styles.color} active name="mail" />
-                <Input style={styles.color}
-                  placeholder="exemplo@dominio.com"
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                  onChangeText={(desemail) => this.setState({ desemail })} />
-              </Item>
-              <Item >
-                <Icon style={styles.color} active name="lock" />
-                <Input style={styles.color}
-                  secureTextEntry={true}
-                  onChangeText={(dessenha) => this.setState({ dessenha })} />
-              </Item>
-            </Form>
-            <Button block
-              style={styles.button}
-              onPress={this.efetuaLogin.bind(this)}>
-              <Text>ENTRAR</Text>
-            </Button>
-          </View>
+
+          <FlatList
+            style={styles.games}
+            data={this.state.gameList}
+            renderItem={this._renderItem}
+            keyExtractor={this._keyExtractor}
+          />
         </ImageBackground>
+
       </Container>
     );
   }

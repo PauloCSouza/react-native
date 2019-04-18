@@ -1,17 +1,22 @@
 import React from "react";
 import { Root } from "native-base";
 import { createStackNavigator, createAppContainer } from "react-navigation";
-import { AsyncStorage } from "@react-native-community/async-storage";
 
+import Login from "./screens/login/";
 import Home from "./screens/home/";
-import Simulados from "./screens/simulados";
-import ScreenLoad from "./screens/screenload";
+
+// Question Componentes
+import QuestionScreen from './screens/questions/questionscreen';
+import QuestionResultsScreen from './screens/questions/questionresultscreen';
+import SimuladoScreen from './screens/simulados/simuladoscreen';
 
 const AppNavigator = createStackNavigator(
   {
+    Login: Login,
     Home: Home,
-    Simulados: Simulados,
-    ScreenLoad: ScreenLoad
+    QuestionScreen: QuestionScreen,
+    QuestionResultsScreen: QuestionResultsScreen,
+    SimuladoScreen: SimuladoScreen
   },
   { headerMode: 'none' }
 );
