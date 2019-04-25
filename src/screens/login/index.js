@@ -1,11 +1,11 @@
 import React, { Component } from "react";
-import { ImageBackground, View, StatusBar } from "react-native";
+import { ImageBackground, View, StatusBar, Image, TextInput, TouchableHighlight } from "react-native";
 import { Container, Button, Text, Form, Item, Input, Icon, Toast } from "native-base";
 import AsyncStorage from '@react-native-community/async-storage';
 
 import styles from "./styles";
 
-const launchscreenBg = require("../../../assets/bg.jpg");
+const launchscreenBg = require("../../../assets/images/bg.jpg");
 
 class Login extends Component {
 
@@ -23,7 +23,7 @@ class Login extends Component {
             try {
                 const value = await AsyncStorage.getItem('@token') || null;
                 if (value) {
-                    this.props.navigation.push('Home');
+                    this.props.navigation.replace('Home');
                 }
             } catch (e) {
                 console.error(e);
@@ -56,16 +56,17 @@ class Login extends Component {
             return;
         }
 
-        fetch('http://192.168.0.2:3000/login', {
-            method: 'POST',
+        const formData = new FormData()
+        formData.append("desemail", this.state.desemail);
+        formData.append("dessenha", this.state.dessenha);
+
+        fetch('https://cms.fastcode.com.br/api/pessoas/enter', {
+            method: 'post',
             headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
+                'Authorization': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJNREV5VW10R1ZGWkZUazVWZHowOVRXcEJlVTUzUFQwIn0=.OtD6Px6ZZIdfHm8PuOX3MFKVyLgxdD/ASNTkh5kcZLM=',
+                'Content-Type': 'multipart/form-data'
             },
-            body: JSON.stringify({
-                desemail: this.state.desemail,
-                dessenha: this.state.dessenha
-            }),
+            body: formData
         })
             .then((response) => response.json())
             .then((responseJson) => {
@@ -99,36 +100,33 @@ class Login extends Component {
 
     render() {
         return (
-            <Container>
-                <StatusBar barStyle="light-content" />
-                <ImageBackground source={launchscreenBg} style={styles.imageContainer}>
-                    <View style={styles.logoContainer}>
-                        <Text style={styles.titulo}>Simul@ TI</Text>
-                    </View>
-                    <View style={styles.formContainer}>
-                        <Form>
-                            <Item >
-                                <Icon style={styles.color} active name="mail" />
-                                <Input style={styles.color}
-                                    placeholder="exemplo@dominio.com"
-                                    keyboardType="email-address"
-                                    autoCapitalize="none"
-                                    onChangeText={(desemail) => this.setState({ desemail })} />
-                            </Item>
-                            <Item >
-                                <Icon style={styles.color} active name="lock" />
-                                <Input style={styles.color}
-                                    secureTextEntry={true}
-                                    onChangeText={(dessenha) => this.setState({ dessenha })} />
-                            </Item>
-                        </Form>
-                        <Button block
-                            style={styles.button}
-                            onPress={this.efetuaLogin.bind(this)}>
-                            <Text>ENTRAR</Text>
-                        </Button>
-                    </View>
-                </ImageBackground>
+            <Container style={styles.bgcolor}>
+
+                <View style={styles.logoContainer}>
+                    <Image style={styles.logoIMG} source={require('./../../../assets/images/logo.png')} />
+                </View>
+
+                <View style={styles.formContainer}>
+                    <Form>
+                        <TextInput placeholder="Digite seu e-mail"
+                            style={styles.input}
+                            keyboardType='email-address'
+                            value={this.state.email}
+                            onChangeText={(desemail) => this.setState({ desemail })}
+                            autoCapitalize="none" />
+                        <TextInput placeholder="Sua senha"
+                            style={styles.input}
+                            value={this.state.senha}
+                            onChangeText={(dessenha) => this.setState({ dessenha })}
+                            secureTextEntry={true} />
+                    </Form>
+                    <TouchableHighlight
+                        style={styles.btnLogin}
+                        onPress={this.efetuaLogin.bind(this)}>
+                        <Text style={styles.btnText}>Entrar</Text>
+                    </TouchableHighlight>
+                </View>
+
             </Container>
         );
     }

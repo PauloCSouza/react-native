@@ -2,7 +2,9 @@ import React, { Component } from "react";
 import {
   ImageBackground,
   View,
-  FlatList
+  FlatList,
+  Image,
+  TouchableHighlight
 } from "react-native";
 import {
   Container,
@@ -63,7 +65,7 @@ class Home extends Component {
     />
   );
 
-  _onPressItem = (game: Object) => {
+  _onPressItem = (game) => {
     //  Store the selected game
     QuestionHelper.setActualGame(game);
 
@@ -76,32 +78,48 @@ class Home extends Component {
 
   };
 
+  logout() {
+
+    removeValue = async () => {
+      try {
+        await AsyncStorage.removeItem('@token');
+        await AsyncStorage.removeItem('@despessoa');
+        await AsyncStorage.removeItem('@desemail');
+      } catch (e) {
+        console.log(error);
+      }
+    }
+    removeValue();
+
+    console.warn('sair');
+    this.props.navigation.navigate('Login');
+
+  }
+
   render() {
     return (
       <Container style={styles.container}>
-        <Header>
-          <Body>
-            <Title>Home</Title>
-          </Body>
-          <Right />
-        </Header>
 
-        <ImageBackground
-          style={styles.imageBackground}
-          source={require('../../../assets/images/bg.png')}
-          resizeMode="cover"
-        >
-          <View style={styles.headerContainer}>
-            <Text style={styles.headerTitle}>Themes</Text>
-          </View>
+        <View style={styles.headerContainer}>
+          <Image style={styles.logoIMG} source={require('./../../../assets/images/logo.png')} />
+        </View>
 
-          <FlatList
-            style={styles.games}
-            data={this.state.gameList}
-            renderItem={this._renderItem}
-            keyExtractor={this._keyExtractor}
-          />
-        </ImageBackground>
+        <View>
+          <Text style={styles.txtSimulado}>Simulados</Text>
+        </View>
+
+        <FlatList
+          style={styles.simulados}
+          data={this.state.gameList}
+          renderItem={this._renderItem}
+          keyExtractor={this._keyExtractor}
+        />
+
+        <TouchableHighlight
+          style={{ flex: 1 }}
+          onPress={this.logout.bind(this)} >
+          <Text style={{ color: '#FFF', textAlign: 'center', fontSize: 16, fontWeight: 'bold' }}>Entrar com outra conta</Text>
+        </TouchableHighlight>
 
       </Container>
     );
